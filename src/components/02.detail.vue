@@ -13,7 +13,12 @@
                 <div class="wrap-box">
                     <div class="left-925">
                         <div class="goods-box clearfix">
-                            <div class="pic-box"></div>
+                            <div class="pic-box">
+                                <ProductZoomer v-if="images.normal_size.length !=0"
+                                   :base-images="images"
+                                   :base-zoomer-options="zoomerOptions"
+                                 />
+                            </div>
                             <div class="goods-spec">
                                 <h1>{{goodsinfo.title}}</h1>
                                 <p class="subtitle">{{goodsinfo.sub_title}}</p>
@@ -52,7 +57,7 @@
                                         <dd>
                                             <div id="buyButton" class="btn-buy">
                                                 <button onclick="cartAdd(this,'/',1,'/shopping.html');" class="buy">立即购买</button>
-                                                <button onclick="cartAdd(this,'/',0,'/cart.html');" class="add">加入购物车</button>
+                                                <button  @click="add2Cart" class="add">加入购物车</button>
                                             </div>
                                         </dd>
                                     </dl>
@@ -175,11 +180,14 @@
                 //商品id
                 artID:"",
 
-                // 商品详情
+                // 商品详情列表
                 goodsinfo: {},
 
-                //右侧热卖商品
+                //右侧热卖商品列表
                 hotgoodslist:[],
+
+                //图片列表
+                imglist:[],
                 
                 //记录购买数量
                 num1:1,
@@ -199,6 +207,26 @@
 
                 //评论内容
                 comment:"",
+
+                //放大镜图片
+                images: {
+                   // required  必须
+                normal_size: [
+                    // {'id':'unique id', 'url': 'image url'},      
+                    // {'id':'unique id', 'url': 'image url'}  
+                    ]
+             },
+
+            //  放大镜设置
+            zoomerOptions:{
+                  'zoomFactor': 3,
+                  'pane': 'pane',
+                  'hoverDelay': 300,
+                  'namespace': 'zoomer',
+                  'move_by_click':false,
+                  'scroll_items': 7,
+                  'choosed_thumb_border_color': "#dd2c00"
+            }
             }
         },
         methods:{
@@ -212,6 +240,16 @@
                 //  console.log(result);
                  this.goodsinfo=result.data.message.goodsinfo;
                  this.hotgoodslist=result.data.message.hotgoodslist
+                 this.imglist=result.data.message.imglist
+                   // 设置给 放大镜的数据.图片地址
+                this.images.normal_size = [];
+                // 循环添加数据
+                this.imglist.forEach(v=>{
+                this.images.normal_size.push({
+                  id:v.id,
+                  url:v.original_path
+              })
+          })
                 
             });
             // 调用获取评论的方法
@@ -263,7 +301,7 @@
             commenttxt: this.comment
           })
           .then(result=>{
-              console.log(result);
+            //   console.log(result);
               //成功
               if(result.data.status==0){
                   this.$Message.success(result.data.message);//返回成功的内容
@@ -278,6 +316,25 @@
               }
           })
       }
+    },
+    // 加入购物车
+    add2Cart(){
+        // 获取商品id
+        // 获取购买数量
+
+        // 提交载荷
+        this.$store.commit('add2Cart',{
+            goodId:this.artID,
+            goodNum:this.num1
+        })
+
+        //提示用户加入成功
+         this.$notify({
+          title: 'success',
+          message: '加入购物车成功',
+          type: 'success',
+          duration:1000
+        });
     }
         },
 
@@ -292,8 +349,11 @@
       //   console.log('数据变了');
       // 重新获取数据即可
       //   this.created();
+      this.images.normal_size=[]
+
       // 初始化数据
       this.initData();
+
     }
   }
        
@@ -304,6 +364,15 @@
 .tab-content img {
   display: block;
   max-width: 100%;
+}
+
+.zoomer-zoomer-box{
+    width: 380px;
+    /* height: 320px; */
+}
+.thumb-list img{
+    width: 100px;
+    height: 100px;
 }
 </style>
 
