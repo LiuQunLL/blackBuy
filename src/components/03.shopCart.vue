@@ -127,10 +127,13 @@
                                 class="button"
                                 onclick="javascript:location.href='/index.html';"
                             >继续购物</button>
+                            <router-link :to="'/order/'+selectIds">
                             <button
                                 class="submit"
-                                onclick="formSubmit(this, '/', '/shopping.html');"
+                                
+                               
                             >立即结算</button>
+                            </router-link>
                         </div>
                     </div>
                     <!--购物车底部-->
@@ -195,6 +198,20 @@ export default {
           }
         });
         return price;
+    },
+    //选中的id数
+    selectIds(){
+      let ids="";
+      this.goodsList.forEach(ele=>{
+          if(ele.isSelected==true){
+              ids+=ele.id;
+              ids+=',';
+          }
+      })
+      //去掉最后一个,
+      ids=ids.slice(0,ids.length-1);
+      //返回ids
+      return ids;
     }
   },
   created() {

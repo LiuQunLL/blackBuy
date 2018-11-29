@@ -35,18 +35,22 @@ import axios from 'axios'
 // 设置到Vue的原型上 那么所有Vue实例化出来的对象 和组件都能够共享这个属性
 // 一般来说 设置到原型上的 属性 Vue中 会使用$作为前缀 用来区分普通的属性
 Vue.prototype.$axios = axios;
+// 设置带上cookie
+axios.defaults.withCredentials=true;//让ajax携带cookie
 
 
 //导入样式
 import './assets/site/css/style.css'
-
 //导入组件
 import index from './components/index.vue'
 //详情页的组件
 import detail from './components/02.detail.vue'
-
 //购物车
 import shopCart from "./components/03.shopCart.vue";
+//结算
+import order from "./components/04.order.vue";
+//登录
+import login from "./components/05.login.vue";
 
 
 
@@ -69,6 +73,17 @@ let routes=[{
     path: "/shopCart",
     component: shopCart
   },
+  //结算页面
+  {
+    path:"/order/:ids",
+    component:order
+  },
+  //登录页面
+  {
+    path:"/login",
+    component:login
+  },
+
 ]
 
 
@@ -95,6 +110,34 @@ let router=new VueRouter({
   routes
 })
 
+// 增加导航守卫 回调函数(每次路由改变的时候 触发)
+router.beforeEach((to, from, next) => {
+  console.log("守卫啦!!!!");
+  // console.log(to);
+  // console.log(from);
+  if (to.path.indexOf('/order')!=-1) {
+    // 正要去订单页
+    // 必须先判断登录
+    axios.get("http://111.230.232.110:8899/site/account/islogin").then(result => {
+      //   console.log(result);
+      if (result.data.code == "nologin") {
+        // 提示用户
+        Vue.prototype.$Message.warning("请先登录");
+        // 跳转页面(路由)
+        router.push("/login");
+      }else{
+        //登录成功
+        next();
+      }
+    });
+  } else {
+    // next 如果不执行 就不会路由跳转
+    next();
+  }
+});   
+
+
+
 
 //vuex的使用
 import Vuex from 'vuex'
@@ -111,8 +154,11 @@ const store = new Vuex.Store({
     cartData:JSON.parse(window.localStorage.getItem('hm24'))||{
       // 90:6,
       // 84:7
-    }
+    },
     // cartData:data
+
+    //退出的字段
+    isLogin:false
   },
   // Vuex的计算属性
   getters:{
@@ -167,6 +213,9 @@ const store = new Vuex.Store({
     updataCartData(state,obj){
       // console.log(obj);
       state.cartData=obj;
+    },
+    changeLogin(state,isLogin){
+      state.isLogin=isLogin
     }
   }
 })
@@ -182,7 +231,28 @@ new Vue({
   render: h => h(App),
   //传入路由对象
   router,
-  store
+  store,
+    // 生命周期函数
+    created() {
+      // console.log('最顶级的被创建了');
+      // 调用登录判断接口
+      // 根据结果判断是否登录
+      axios.get("http://111.230.232.110:8899/site/account/islogin").then(result => {
+        console.log(result);
+        if (result.data.code == "nologin") {
+          // 提示用户
+          // Vue.prototype.$Message.warning("请先登录");
+          // 跳转页面(路由) 登录页面 编程式导航
+          // router.push("/login");
+          store.state.isLogin = false;
+        } else {
+          // 修改仓库中的状态
+          store.state.isLogin = true;
+          // 如果登录成功啦
+          // next();
+        }
+      });
+    }
 }).$mount('#app')
 
 
