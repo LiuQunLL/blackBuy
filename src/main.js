@@ -51,7 +51,12 @@ import shopCart from "./components/03.shopCart.vue";
 import order from "./components/04.order.vue";
 //登录
 import login from "./components/05.login.vue";
-
+//付钱页面
+import payMoney from "./components/06.payMoney.vue";
+//支付成功页面
+import paySuccess from "./components/07.paySuccess.vue";
+//会员中心
+import vipCenter from "./components/08.vipCenter.vue"
 
 
 //写路由规则
@@ -76,13 +81,41 @@ let routes=[{
   //结算页面
   {
     path:"/order/:ids",
-    component:order
+    component:order,
+    meta:{
+      checkLogin:true
+    }
   },
   //登录页面
   {
     path:"/login",
     component:login
   },
+  //支付页面,付钱页面
+  {
+    path:'/payMoney/:orderid',
+    component:payMoney,
+    meta:{
+      checkLogin:true
+    }
+  },
+  //支付成功
+  {
+    path:'/paySuccess',
+    component:paySuccess,
+    meta:{
+      checkLogin:true
+    }
+  },
+  //会员中心
+  {
+    path:'/vipCenter',
+    component:vipCenter,
+    meta:{
+      checkLogin:true
+    }
+  },
+
 
 ]
 
@@ -115,7 +148,8 @@ router.beforeEach((to, from, next) => {
   console.log("守卫啦!!!!");
   // console.log(to);
   // console.log(from);
-  if (to.path.indexOf('/order')!=-1) {
+  // if (to.path.indexOf('/order')!=-1) {
+    if (to.meta.checkLogin==true) {
     // 正要去订单页
     // 必须先判断登录
     axios.get("http://111.230.232.110:8899/site/account/islogin").then(result => {
@@ -216,7 +250,18 @@ const store = new Vuex.Store({
     },
     changeLogin(state,isLogin){
       state.isLogin=isLogin
-    }
+    },
+      // 删除某一条数据的方法
+    // 已经被 watch中的代码 实现  只是为了 演示 Vue.delete这个方法
+    delGoodsById(state, id) {
+      // console.log(id);
+      // 根据id 删除state中的数据
+      // delete state.cartData[id];
+      // delete 删除的属性 Vue无法跟踪
+      // 参数1 对象 参数2 删除的属性
+      // 必须使用Vue.delete才可以同步更新视图
+      Vue.delete(state.cartData, id);
+    },
   }
 })
 
