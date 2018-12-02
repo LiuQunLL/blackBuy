@@ -36,8 +36,11 @@
                                             </h2>
                                             <div class="list">
                                                 <p>
-                                                    <a href="#/site/member/orderlist" class="">
-                                                        <i class="iconfont icon-arrow-right"></i>交易订单</a>
+                                                    <!-- <a href="#/site/member/orderlist" class=""> -->
+                                                    <router-link to="/vipCenter/orderList" >
+                                                        <i class="iconfont icon-arrow-right"></i>交易订单
+                                                        <!-- </a> -->
+                                                    </router-link>
                                                 </p>
                                             </div>
                                         </li>
@@ -60,7 +63,7 @@
                                                         <i class="iconfont icon-arrow-right"></i>修改密码</a>
                                                 </p>
                                                 <p>
-                                                    <a href="javascript:void(0)">
+                                                    <a @click="logout"  href="javascript:void(0)">
                                                         <i class="iconfont icon-arrow-right"></i>退出登录</a>
                                                 </p>
                                             </div>
@@ -69,45 +72,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="right-auto">
-                            <div class="bg-wrap" style="min-height: 765px;">
-                                <div class="sub-tit">
-                                    <ul>
-                                        <li class="selected">
-                                            <a href="javascript:;">个人中心</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="center-head clearfix">
-                                    <div class="img-box">
-                                        <!-- <i class="iconfont icon-user-full"></i> -->
-                                        <img src="../assets/222.jpg" alt="">
-                                    </div>
-                                    <div class="list-box">
-                                        <h3>欢迎您~ ivanyb</h3>
-                                        <ul>
-                                            <li>组别：注册会员</li>
-                                            <li>手机：13987654321</li>
-                                            <li>Email:ivanyb1@qq.com</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="center-info clearfix"></div>
-                                <div class="center-tit">
-                                    <span>
-                                        <a href="/user/order-list.html">更多..</a>
-                                    </span>
-                                    <h3>
-                                        <i class="iconfont icon-order"></i>我的订单</h3>
-                                </div>
-                                <div class="center-info clearfix">
-                                    <ul>
-                                        <li>已完成订单：0个</li>
-                                        <li>待完成订单：2个</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
+                        <router-view></router-view>
                     </div>
                 </div>
             </div>
@@ -115,9 +80,54 @@
     </div>
 </template>
 <script>
-    
+    export default{
+        name:'vipCenter',
+        data:function(){
+            return{
+
+            }
+        },
+        methods:{
+            //退出
+            logout(){
+                  // 用户登出提示
+               this.$confirm("你确定要退出登录 嘤嘤嘤 (╥╯^╰╥)", "提示", {
+                 confirmButtonText: "残忍退出",
+                 cancelButtonText: "继续待着",
+                 type: "warning"
+               })
+
+               .then(()=>{
+                                //调出登出接口
+                     this.$axios.get(`http://111.230.232.110:8899/site/account/logout`)
+                     .then(result=>{
+                         console.log(result);
+                            if(result.data.status===0){
+                           this.$Message.success(result.data.message);
+                           // 编程式导航 去首页
+                           this.$router.push('/index');
+                           // 修改Vuex中的 登录字段 为false
+                           this.$store.commit('changeLogin',false);
+                       }
+                         
+                     })
+               })
+               .catch(()=>{
+                   this.$message({
+                  type: 'info',
+                  message: '已取消删除'
+                });
+               })
+            }
+        }
+    }
 </script>
 <style>
-
+.sub-tit {
+  padding-top: 0;
+}
+.avatar-box {
+  height: auto;
+}
 </style>
 

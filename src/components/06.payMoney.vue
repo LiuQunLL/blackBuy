@@ -113,7 +113,7 @@
              this.$axios
              .get(`http://111.230.232.110:8899/site/validate/order/getorder/${this.orderid}`)
              .then(result=>{
-                 console.log(result);
+                //  console.log(result);
                  this.orderInfo=result.data.message[0];
              });
              //开启定时器,间隔询问
@@ -122,7 +122,7 @@
               this.$axios
              .get(`http://111.230.232.110:8899/site/validate/order/getorder/${this.orderid}`)
              .then(result=>{
-                 console.log(result);
+                //  console.log(result);
                 // 判断订单的状态是什么
                if (result.data.message[0].status === 2) {
                  // 已经支付成功

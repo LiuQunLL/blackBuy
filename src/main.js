@@ -56,7 +56,13 @@ import payMoney from "./components/06.payMoney.vue";
 //支付成功页面
 import paySuccess from "./components/07.paySuccess.vue";
 //会员中心
-import vipCenter from "./components/08.vipCenter.vue"
+import vipCenter from "./components/08.vipCenter.vue";
+//订单列表
+import orderList from "./components/09.orderList.vue";
+//订单详情
+import orderDetail from "./components/10.orderDetail.vue";
+//
+import indexinfo from "./components/11.indexinfo.vue"
 
 
 //写路由规则
@@ -113,7 +119,37 @@ let routes=[{
     component:vipCenter,
     meta:{
       checkLogin:true
-    }
+    },
+    //嵌套路由
+    children:[
+      {
+        path: "",
+        // 重定向到 首页/index
+        redirect: "indexinfo"
+      },
+      {
+        // /vipCenter/index
+        path:'indexinfo',
+        component:indexinfo
+      },
+      {
+        // 这里的地址 不用写 / 会自动拼接上 父路由的 地址
+        path:'orderList',
+        component:orderList
+      },
+      {
+        // 这里的地址 不用写 / 会自动拼接上 父路由的 地址
+        path:'orderDetail/:orderId',
+        component:orderDetail
+      },
+      // {
+      //   // 这里的地址 不用写 / 会自动拼接上 父路由的 地址
+      //   path:'orderList',
+      //   component:goldVip
+      // },
+
+
+    ]
   },
 
 
@@ -168,7 +204,14 @@ router.beforeEach((to, from, next) => {
     // next 如果不执行 就不会路由跳转
     next();
   }
-});   
+});  
+
+// // 路由跳转完毕触发
+// 这种方法 是使用导航守卫的 回调函数实现 
+router.afterEach((to, from) => {
+  // 页面滚到顶部即可
+  window.scrollTo(0,0);
+})
 
 
 

@@ -363,7 +363,7 @@ export default {
                this.$router.push("/payMoney/"+result.data.message.orderid);
                this.goodsList.forEach(v=>{
                 this.$store.commit('delGoodsById',v.id);
-            //      if(ele.id==id){
+            //      if(v.id){
             //       this.goodsList.splice(index,1)
             // }
               })
